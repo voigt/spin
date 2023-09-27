@@ -2,6 +2,12 @@ interface config {
   // Get a configuration value for the current component.
   // The config key must match one defined in in the component manifest.
   get-config: func(key: string) -> result<string, error>
+  get-config-all: func() -> result<list<keyvalue>, error>
+
+	record keyvalue {
+		key: string,
+		value: string
+	}
 
   variant error {
       provider(string),

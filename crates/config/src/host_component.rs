@@ -87,6 +87,20 @@ impl config::Host for ComponentConfig {
         }
         .await)
     }
+
+    async fn get_config_all(&mut self) -> Result<Result<Vec<config::Keyvalue>, config::Error>> {
+        Ok(async {
+            let component_id = self.component_id.as_deref().unwrap();
+
+            Ok(self
+                .resolver
+                .get()
+                .unwrap()
+                .resolve_all(component_id)
+                .await?)
+        }
+        .await)
+    }
 }
 
 impl From<Error> for config::Error {

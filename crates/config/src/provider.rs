@@ -13,4 +13,5 @@ pub mod vault;
 pub trait Provider: Debug + Send + Sync {
     /// Returns the value at the given config path, if it exists.
     async fn get(&self, key: &Key) -> anyhow::Result<Option<String>>;
+    // async fn get_all(&self) -> anyhow::Result<Option<Vec<KeyValue>>>;
 }

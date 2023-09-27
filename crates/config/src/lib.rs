@@ -5,6 +5,7 @@ mod template;
 use std::{borrow::Cow, collections::HashMap, fmt::Debug};
 
 use spin_app::Variable;
+use spin_world::config;
 
 pub use crate::{host_component::ConfigHostComponent, provider::Provider};
 use template::{Part, Template};
@@ -71,6 +72,23 @@ impl Resolver {
             .ok_or_else(|| Error::UnknownPath(format!("no config for {component_id:?}.{key:?}")))?;
 
         self.resolve_template(template).await
+    }
+
+    pub async fn resolve_all(&self, component_id: &str) -> Result<Vec<config::Keyvalue>> {
+        let configs = self.component_configs.get(component_id).ok_or_else(|| {
+            Error::UnknownPath(format!("no config for component {component_id:?}"))
+        })?;
+
+        let mut r: Vec<config::Keyvalue> = Vec::with_capacity(configs.len());
+
+        for (key, template) in configs.iter() {
+            // r.push(key.to_string());
+            r.push(config::Keyvalue {
+                key: key.to_string(),
+                value: self.resolve_template(template).await?,
+            });
+        }
+        Ok(r)
     }
 
     async fn resolve_template(&self, template: &Template) -> Result<String> {
